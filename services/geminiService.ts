@@ -101,8 +101,9 @@ export const searchYouTuberVideos = async (youtuberName: string): Promise<Search
   }
 
   const ai = new GoogleGenAI({ apiKey: API_KEY });
-  // Use gemini-3-pro-image-preview as it supports googleSearch and is smart enough for extraction
-  const modelName = 'gemini-3-pro-image-preview';
+  // Use gemini-2.5-flash for text/search tasks. 
+  // gemini-3-pro-image-preview is strictly for image generation and may cause token errors with text-only search tasks.
+  const modelName = 'gemini-2.5-flash';
 
   const prompt = `
     Find 5 recent or popular videos by the YouTuber "${youtuberName}".
@@ -122,7 +123,7 @@ export const searchYouTuberVideos = async (youtuberName: string): Promise<Search
       contents: prompt,
       config: {
         tools: [{ googleSearch: {} }],
-        // responseSchema is NOT supported for this model, so we rely on prompt engineering for JSON
+        // responseSchema is NOT supported when googleSearch is enabled, relying on text parsing.
       },
     });
 
@@ -133,7 +134,14 @@ export const searchYouTuberVideos = async (youtuberName: string): Promise<Search
     
     let parsedData: any[] = [];
     try {
-      parsedData = JSON.parse(jsonStr);
+      // Robustly find JSON array
+      const start = jsonStr.indexOf('[');
+      const end = jsonStr.lastIndexOf(']');
+      if (start !== -1 && end !== -1) {
+        parsedData = JSON.parse(jsonStr.substring(start, end + 1));
+      } else {
+        parsedData = JSON.parse(jsonStr);
+      }
     } catch (e) {
       console.error("Failed to parse Gemini search results:", text);
       throw new Error("AI could not structure the search results.");
@@ -161,6 +169,6 @@ export const searchYouTuberVideos = async (youtuberName: string): Promise<Search
 
   } catch (error: any) {
     console.error("Search Error:", error);
-    throw new Error("Failed to search videos. Ensure you are using a paid API Key.");
+    throw new Error(error.message || "Failed to search videos.");
   }
 };
