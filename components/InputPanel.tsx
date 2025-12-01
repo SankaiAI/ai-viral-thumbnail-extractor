@@ -1,6 +1,8 @@
+
 import React, { useRef, useState } from 'react';
-import { Upload, Youtube, Image as ImageIcon, X, Link } from 'lucide-react';
+import { Upload, Youtube, Image as ImageIcon, X, Search, Link } from 'lucide-react';
 import { getYoutubeVideoId, imageUrlToBase64, fileToBase64 } from '../utils';
+import { YouTuberSearch } from './YouTuberSearch';
 
 interface InputPanelProps {
   onYoutubeThumbnailChange: (base64: string | null) => void;
@@ -9,12 +11,15 @@ interface InputPanelProps {
   profileImage: string | null;
 }
 
+type SourceTab = 'url' | 'search';
+
 export const InputPanel: React.FC<InputPanelProps> = ({
   onYoutubeThumbnailChange,
   onProfileImageChange,
   youtubeThumbnail,
   profileImage
 }) => {
+  const [activeTab, setActiveTab] = useState<SourceTab>('url');
   const [youtubeLink, setYoutubeLink] = useState('');
   const [loadingYt, setLoadingYt] = useState(false);
   const [ytError, setYtError] = useState<string | null>(null);
@@ -55,6 +60,11 @@ export const InputPanel: React.FC<InputPanelProps> = ({
     }
   };
 
+  const handleVideoSelect = (base64: string, videoId: string) => {
+    onYoutubeThumbnailChange(base64);
+    setYoutubeLink(`https://www.youtube.com/watch?v=${videoId}`);
+  };
+
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
@@ -76,32 +86,57 @@ export const InputPanel: React.FC<InputPanelProps> = ({
 
       {/* YouTube Section */}
       <div className="space-y-3">
-        <label className="text-sm font-medium text-gray-400">1. Extract Style (YouTube)</label>
-        <div className="flex gap-2">
-          <div className="relative flex-1">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Youtube className="h-5 w-5 text-gray-500" />
-            </div>
-            <input
-              type="text"
-              className="block w-full pl-10 pr-3 py-2 border border-gray-700 rounded-lg leading-5 bg-dark-900 text-gray-300 placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-brand-500 focus:border-brand-500 sm:text-sm"
-              placeholder="Paste YouTube URL..."
-              value={youtubeLink}
-              onChange={(e) => setYoutubeLink(e.target.value)}
-            />
-          </div>
-          <button
-            onClick={handleYoutubeExtract}
-            disabled={loadingYt || !youtubeLink}
-            className="px-4 py-2 bg-brand-600 hover:bg-brand-500 disabled:opacity-50 text-white rounded-lg text-sm font-medium transition-colors"
-          >
-            {loadingYt ? '...' : 'Extract'}
-          </button>
+        <div className="flex items-center justify-between">
+           <label className="text-sm font-medium text-gray-400">1. Extract Style (YouTube)</label>
+           
+           {/* Tab Switcher */}
+           <div className="flex bg-dark-900 rounded-lg p-0.5 border border-gray-700">
+             <button
+               onClick={() => setActiveTab('url')}
+               className={`px-3 py-1 text-xs rounded-md transition-all ${activeTab === 'url' ? 'bg-gray-700 text-white shadow-sm' : 'text-gray-400 hover:text-gray-200'}`}
+             >
+               Paste URL
+             </button>
+             <button
+               onClick={() => setActiveTab('search')}
+               className={`px-3 py-1 text-xs rounded-md transition-all ${activeTab === 'search' ? 'bg-gray-700 text-white shadow-sm' : 'text-gray-400 hover:text-gray-200'}`}
+             >
+               Search Creator
+             </button>
+           </div>
         </div>
-        {ytError && <p className="text-xs text-red-400">{ytError}</p>}
+
+        {activeTab === 'url' ? (
+          <div className="space-y-2">
+            <div className="flex gap-2">
+              <div className="relative flex-1">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Link className="h-4 w-4 text-gray-500" />
+                </div>
+                <input
+                  type="text"
+                  className="block w-full pl-9 pr-3 py-2 border border-gray-700 rounded-lg leading-5 bg-dark-900 text-gray-300 placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-brand-500 focus:border-brand-500 text-sm"
+                  placeholder="Paste YouTube URL..."
+                  value={youtubeLink}
+                  onChange={(e) => setYoutubeLink(e.target.value)}
+                />
+              </div>
+              <button
+                onClick={handleYoutubeExtract}
+                disabled={loadingYt || !youtubeLink}
+                className="px-4 py-2 bg-brand-600 hover:bg-brand-500 disabled:opacity-50 text-white rounded-lg text-sm font-medium transition-colors"
+              >
+                {loadingYt ? '...' : 'Extract'}
+              </button>
+            </div>
+            {ytError && <p className="text-xs text-red-400">{ytError}</p>}
+          </div>
+        ) : (
+          <YouTuberSearch onSelectVideo={handleVideoSelect} />
+        )}
         
         {youtubeThumbnail && (
-          <div className="relative w-full aspect-video rounded-lg overflow-hidden border border-gray-700 group">
+          <div className="relative w-full aspect-video rounded-lg overflow-hidden border border-gray-700 group mt-2">
              <img 
                src={`data:image/jpeg;base64,${youtubeThumbnail}`} 
                alt="Extracted Thumbnail" 

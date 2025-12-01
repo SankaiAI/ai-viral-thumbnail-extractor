@@ -1,3 +1,4 @@
+
 export enum AspectRatio {
   Landscape = '16:9',
   Portrait = '9:16',
@@ -23,6 +24,14 @@ export interface HistoryItem {
   prompt: string;
   timestamp: number;
   settings: GenerationSettings;
+}
+
+export interface SearchedVideo {
+  id: string;
+  title: string;
+  views: string;
+  publishedTime: string;
+  thumbnailUrl: string;
 }
 
 export interface AppState {
