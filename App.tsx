@@ -240,7 +240,7 @@ export default function App() {
     <div className="min-h-screen bg-[#0A0A0A] text-white font-sans selection:bg-brand-500/30 selection:text-brand-200">
       {/* Header */}
       <header className="sticky top-0 z-50 bg-[#0A0A0A]/80 backdrop-blur-md border-b border-white/5">
-        <div className="max-w-[1600px] mx-auto px-6 h-14 flex items-center justify-between">
+        <div className="max-w-[1920px] mx-auto px-6 h-14 flex items-center justify-between">
           <div className="flex items-center gap-3">
              <div className="w-8 h-8 bg-gradient-to-br from-brand-600 to-purple-600 rounded-lg flex items-center justify-center shadow-lg shadow-brand-500/20">
                 <Maximize2 className="w-4 h-4 text-white" />
@@ -259,10 +259,11 @@ export default function App() {
         </div>
       </header>
 
-      <main className="max-w-[1600px] mx-auto px-6 py-6 grid grid-cols-1 lg:grid-cols-12 gap-6 h-[calc(100vh-3.5rem)]">
+      {/* Main 3-Column Layout */}
+      <main className="max-w-[1920px] mx-auto px-4 py-4 grid grid-cols-1 lg:grid-cols-12 gap-4 h-[calc(100vh-3.5rem)]">
         
-        {/* Left Column: Inputs & Chat (4 cols) */}
-        <div className="lg:col-span-4 flex flex-col gap-6 h-full overflow-y-auto pb-20 lg:pb-0 scrollbar-thin scrollbar-thumb-gray-800 pr-1">
+        {/* Left Column: Inputs (3 cols) */}
+        <div className="lg:col-span-3 flex flex-col h-full overflow-y-auto scrollbar-none gap-4">
           <InputPanel 
             onYoutubeThumbnailChange={handleYoutubeChange}
             onProfileImageChange={handleProfileChange}
@@ -271,18 +272,10 @@ export default function App() {
             initialUrl={landingUrl}
             autoTrigger={!!landingUrl}
           />
-          
-          <div className="flex-1 min-h-[350px] shadow-xl">
-            <ChatPanel 
-              messages={state.messages} 
-              onSendMessage={handleSendMessage}
-              isGenerating={state.isGenerating}
-            />
-          </div>
         </div>
 
-        {/* Right Column: Preview & History (8 cols) */}
-        <div className="lg:col-span-8 flex flex-col h-full min-h-0 bg-dark-800/30 rounded-2xl border border-gray-800/50 relative overflow-hidden">
+        {/* Center Column: Preview & History (6 cols) */}
+        <div className="lg:col-span-6 flex flex-col h-full min-h-0 bg-dark-800/30 rounded-2xl border border-gray-800/50 relative overflow-hidden shadow-2xl">
           
           {/* Top Toolbar */}
           <div className="absolute top-0 left-0 right-0 z-20 p-4 flex items-center justify-between bg-gradient-to-b from-black/80 to-transparent pointer-events-none">
@@ -401,7 +394,15 @@ export default function App() {
               </div>
             </div>
           )}
+        </div>
 
+        {/* Right Column: Chat (3 cols) */}
+        <div className="lg:col-span-3 flex flex-col h-full min-h-0">
+          <ChatPanel 
+            messages={state.messages} 
+            onSendMessage={handleSendMessage}
+            isGenerating={state.isGenerating}
+          />
         </div>
       </main>
     </div>
