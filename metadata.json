@@ -1,0 +1,5 @@
+{
+  "name": "ViralThumb AI",
+  "description": "Create viral-style YouTube thumbnails by extracting styles from existing videos and blending them with your own profile picture using Gemini Nano Banana Pro.",
+  "requestFramePermissions": []
+}
