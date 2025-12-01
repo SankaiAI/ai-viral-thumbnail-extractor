@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { InputPanel } from './components/InputPanel';
 import { ChatPanel } from './components/ChatPanel';
+import { LandingPage } from './components/LandingPage';
 import { generateViralCover } from './services/geminiService';
 import { AppState, AspectRatio, ChatMessage, HistoryItem } from './types';
 import { Download, Monitor, Smartphone, Maximize2, Image as ImageIcon, Key, Loader2, Clock, Sparkles, Zap } from 'lucide-react';
@@ -19,6 +20,8 @@ declare global {
 export default function App() {
   const [hasKey, setHasKey] = useState(false);
   const [checkingKey, setCheckingKey] = useState(true);
+  const [showLanding, setShowLanding] = useState(true);
+  const [landingUrl, setLandingUrl] = useState('');
 
   const [state, setState] = useState<AppState>({
     youtubeUrl: '',
@@ -51,6 +54,11 @@ export default function App() {
       await window.aistudio.openSelectKey();
       setHasKey(true);
     }
+  };
+
+  const handleLandingSubmit = (url: string) => {
+    setLandingUrl(url);
+    setShowLanding(false);
   };
 
   const handleYoutubeChange = (base64: string | null) => {
@@ -224,6 +232,10 @@ export default function App() {
     );
   }
 
+  if (showLanding) {
+    return <LandingPage onUrlSubmit={handleLandingSubmit} />;
+  }
+
   return (
     <div className="min-h-screen bg-[#0A0A0A] text-white font-sans selection:bg-brand-500/30 selection:text-brand-200">
       {/* Header */}
@@ -256,6 +268,8 @@ export default function App() {
             onProfileImageChange={handleProfileChange}
             youtubeThumbnail={state.youtubeThumbnail}
             profileImage={state.profileImage}
+            initialUrl={landingUrl}
+            autoTrigger={!!landingUrl}
           />
           
           <div className="flex-1 min-h-[350px] shadow-xl">

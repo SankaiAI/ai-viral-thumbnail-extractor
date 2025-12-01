@@ -1,5 +1,5 @@
 
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { Upload, Youtube, Image as ImageIcon, X, Search, Link, CheckCircle2 } from 'lucide-react';
 import { getYoutubeVideoId, imageUrlToBase64, fileToBase64 } from '../utils';
 import { YouTuberSearch } from './YouTuberSearch';
@@ -9,6 +9,8 @@ interface InputPanelProps {
   onProfileImageChange: (base64: string | null) => void;
   youtubeThumbnail: string | null;
   profileImage: string | null;
+  initialUrl?: string;
+  autoTrigger?: boolean;
 }
 
 type SourceTab = 'url' | 'search';
@@ -17,17 +19,20 @@ export const InputPanel: React.FC<InputPanelProps> = ({
   onYoutubeThumbnailChange,
   onProfileImageChange,
   youtubeThumbnail,
-  profileImage
+  profileImage,
+  initialUrl,
+  autoTrigger
 }) => {
   const [activeTab, setActiveTab] = useState<SourceTab>('url');
-  const [youtubeLink, setYoutubeLink] = useState('');
+  const [youtubeLink, setYoutubeLink] = useState(initialUrl || '');
   const [loadingYt, setLoadingYt] = useState(false);
   const [ytError, setYtError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleYoutubeExtract = async () => {
+  const handleYoutubeExtract = async (urlOverride?: string) => {
+    const urlToUse = urlOverride || youtubeLink;
     setYtError(null);
-    const videoId = getYoutubeVideoId(youtubeLink);
+    const videoId = getYoutubeVideoId(urlToUse);
     if (!videoId) {
       setYtError("Invalid YouTube URL");
       return;
@@ -52,6 +57,13 @@ export const InputPanel: React.FC<InputPanelProps> = ({
       setLoadingYt(false);
     }
   };
+
+  useEffect(() => {
+    if (initialUrl && autoTrigger) {
+      setYoutubeLink(initialUrl);
+      handleYoutubeExtract(initialUrl);
+    }
+  }, []);
 
   const handleVideoSelect = (base64: string, videoId: string) => {
     onYoutubeThumbnailChange(base64);
@@ -115,7 +127,7 @@ export const InputPanel: React.FC<InputPanelProps> = ({
                   />
                 </div>
                 <button
-                  onClick={handleYoutubeExtract}
+                  onClick={() => handleYoutubeExtract()}
                   disabled={loadingYt || !youtubeLink}
                   className="px-4 py-2 bg-gray-700 hover:bg-gray-600 disabled:opacity-50 text-white rounded-xl text-sm font-medium transition-colors"
                 >
