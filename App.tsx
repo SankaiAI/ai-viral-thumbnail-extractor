@@ -79,8 +79,17 @@ export default function App() {
 
   const handleLandingSubmit = (url: string) => {
     setLandingUrl(url);
-    setShowLanding(false);
+    if (user) {
+      setShowLanding(false);
+    }
   };
+
+  // Auto-hide landing page when user logs in
+  React.useEffect(() => {
+    if (user && landingUrl) {
+      setShowLanding(false);
+    }
+  }, [user, landingUrl]);
 
   const handleYoutubeChange = (base64: string | null) => {
     setState(prev => ({ ...prev, youtubeThumbnail: base64 }));
@@ -284,7 +293,7 @@ export default function App() {
   }
 
   if (showLanding) {
-    return <LandingPage onUrlSubmit={handleLandingSubmit} />;
+    return <LandingPage onUrlSubmit={handleLandingSubmit} onSignIn={() => setShowAuthModal(true)} />;
   }
 
   return (

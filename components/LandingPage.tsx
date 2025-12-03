@@ -1,9 +1,10 @@
 
 import React, { useState } from 'react';
-import { Link, ArrowRight, Sparkles, Video, PlayCircle } from 'lucide-react';
+import { Link, ArrowRight, Sparkles, Video, PlayCircle, LogIn } from 'lucide-react';
 
 interface LandingPageProps {
   onUrlSubmit: (url: string) => void;
+  onSignIn?: () => void;
 }
 
 const LUCKY_URLS = [
@@ -13,7 +14,7 @@ const LUCKY_URLS = [
   "https://www.youtube.com/watch?v=jNQXAC9IVRw", // Me at the zoo
 ];
 
-export const LandingPage: React.FC<LandingPageProps> = ({ onUrlSubmit }) => {
+export const LandingPage: React.FC<LandingPageProps> = ({ onUrlSubmit, onSignIn }) => {
   const [url, setUrl] = useState('');
 
   const handleSubmit = (e?: React.FormEvent) => {
@@ -31,6 +32,17 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onUrlSubmit }) => {
 
   return (
     <div className="min-h-screen bg-[#0A0A0A] flex flex-col items-center justify-center p-6 relative overflow-hidden">
+      {/* Login Button - Top Right */}
+      {onSignIn && (
+        <button
+          onClick={onSignIn}
+          className="absolute top-6 right-6 z-20 flex items-center gap-2 px-4 py-2 bg-white text-black rounded-full font-semibold hover:bg-gray-200 transition-colors"
+        >
+          <LogIn className="w-4 h-4" />
+          Sign In
+        </button>
+      )}
+
       {/* Background decoration */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-brand-500/10 rounded-full blur-3xl opacity-50"></div>
@@ -38,13 +50,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onUrlSubmit }) => {
       </div>
 
       <div className="relative z-10 w-full max-w-4xl flex flex-col items-center text-center space-y-12 animate-in fade-in zoom-in-95 duration-500">
-        
+
         {/* Header */}
-        <div className="space-y-4">
+        <div className="space-y-4">"
           <div className="flex items-center justify-center gap-3 mb-2">
-             <div className="w-10 h-10 bg-gradient-to-br from-brand-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-brand-500/20">
-                <Video className="w-5 h-5 text-white" />
-             </div>
+            <div className="w-10 h-10 bg-gradient-to-br from-brand-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-brand-500/20">
+              <Video className="w-5 h-5 text-white" />
+            </div>
           </div>
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-white">
             ViralThumb AI
@@ -94,20 +106,20 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onUrlSubmit }) => {
         {/* Feature Card */}
         <div className="w-full max-w-lg">
           <div className="bg-dark-900/50 backdrop-blur-md border border-gray-800 rounded-2xl p-6 flex items-center justify-between hover:border-brand-500/30 transition-colors cursor-default group">
-             <div className="space-y-1.5 text-left">
-               <h3 className="font-semibold text-white group-hover:text-brand-400 transition-colors">Capture the Vibe</h3>
-               <p className="text-sm text-gray-500 leading-relaxed">
-                 Don't start from scratch. Use any video as a style reference for your next masterpiece.
-               </p>
-             </div>
-             <div className="ml-4 w-16 h-16 rounded-full bg-gradient-to-tr from-purple-500/20 to-brand-500/20 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-500">
-                <PlayCircle className="w-8 h-8 text-gray-300 group-hover:text-white transition-colors" />
-             </div>
+            <div className="space-y-1.5 text-left">
+              <h3 className="font-semibold text-white group-hover:text-brand-400 transition-colors">Capture the Vibe</h3>
+              <p className="text-sm text-gray-500 leading-relaxed">
+                Don't start from scratch. Use any video as a style reference for your next masterpiece.
+              </p>
+            </div>
+            <div className="ml-4 w-16 h-16 rounded-full bg-gradient-to-tr from-purple-500/20 to-brand-500/20 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-500">
+              <PlayCircle className="w-8 h-8 text-gray-300 group-hover:text-white transition-colors" />
+            </div>
           </div>
         </div>
 
       </div>
-      
+
       {/* Footer */}
       <div className="absolute bottom-6 text-xs text-gray-600">
         Powered by Gemini Nano Banana Pro
