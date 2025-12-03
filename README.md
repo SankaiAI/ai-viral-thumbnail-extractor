@@ -1,63 +1,103 @@
 # ViralThumb AI
 
-ViralThumb AI is a React-based application designed to generate viral-worthy YouTube thumbnails using Google's Gemini Nano Banana Pro model. It allows users to input a video URL or upload images, configure style settings, and generate high-quality thumbnails.
+ViralThumb AI is a powerful tool that helps you create viral-worthy YouTube thumbnails in seconds. It extracts style references from existing videos and uses advanced AI to generate stunning new designs.
 
-## 🚀 Features
+![ViralThumb AI Demo](public/og-image.png)
 
-- **AI-Powered Generation**: Utilizes Google's Gemini model to create engaging thumbnails.
-- **Contextual Input**: Supports YouTube video URLs and profile image uploads for personalized results.
-- **Customizable Settings**: Adjust aspect ratios (16:9, 9:16, 1:1) and resolution.
-- **History Tracking**: Keeps a local history of generated thumbnails and prompts.
-- **Direct Download**: Easily save generated images to your device.
+## Features
 
-## 🛠️ Project Structure
+- 🎥 **Style Extraction**: Paste a YouTube URL to extract thumbnail style and vibe.
+- 🎨 **AI Generation**: Generate high-quality thumbnails using Google's Gemini 1.5 Pro.
+- 👤 **User Accounts**: Sign in with Google to save your creations and manage credits.
+- 💳 **Credit System**: Free guest usage (3 limits) and credit-based system for logged-in users.
+- 🔗 **Referral System**: Invite friends to earn more credits.
+- ☁️ **Cloud Storage**: Automatically save your generated thumbnails to the cloud.
 
-```
-ai-viral-thumbnail-extractor/
-├── components/          # UI Components
-│   ├── InputPanel.tsx   # Left sidebar for user inputs
-│   ├── ChatPanel.tsx    # Right sidebar for chat/prompt interface
-│   └── LandingPage.tsx  # Initial landing screen
-├── services/            # API Services
-│   └── geminiService.ts # Google GenAI integration logic
-├── App.tsx              # Main application controller and layout
-├── utils.ts             # Helper functions
-├── types.ts             # TypeScript definitions
-├── vite.config.ts       # Vite configuration
-└── .env                 # Environment variables
-```
+## Tech Stack
 
-## 💻 Setup & Installation
+- **Frontend**: React, TypeScript, Vite, Tailwind CSS
+- **Authentication**: Clerk
+- **Database**: Neon (PostgreSQL)
+- **AI Model**: Google Gemini 1.5 Pro
+- **Deployment**: Vercel
 
-1.  **Prerequisites**
-    - Node.js (v18+ recommended)
-    - A Google Cloud Project with Gemini API access
+## Local Development Setup
 
-2.  **Installation**
-    ```bash
-    npm install
-    ```
+Follow these steps to get the project running on your local machine.
 
-3.  **Configuration**
-    Create a `.env` file in the root directory (or use the existing one) and add your API key:
-    ```env
-    GEMINI_API_KEY=your_api_key_here
-    ```
+### Prerequisites
 
-4.  **Running Locally**
-    Start the development server:
-    ```bash
-    npm run dev
-    ```
-    The app will be available at `http://localhost:3001` (or the port specified in your terminal).
+- Node.js (v18 or higher)
+- npm or yarn
+- A [Clerk](https://clerk.com/) account
+- A [Neon](https://neon.tech/) account
+- A [Google AI Studio](https://aistudio.google.com/) API key
 
-## 🔑 API Key Note
+### 1. Clone the Repository
 
-The application checks for the `GEMINI_API_KEY` in your environment variables. If found, it bypasses the manual connection screen. Ensure your key has the necessary permissions for the Gemini API.
-
-## 📦 Build
-
-To build the project for production:
 ```bash
-npm run build
+git clone https://github.com/SankaiAI/ai-viral-thumbnail-extractor.git
+cd ai-viral-thumbnail-extractor
 ```
+
+### 2. Install Dependencies
+
+```bash
+npm install
+```
+
+### 3. Environment Setup
+
+Create a `.env` file in the root directory and add the following variables:
+
+```env
+# Clerk Authentication
+VITE_CLERK_PUBLISHABLE_KEY=pk_test_...
+CLERK_SECRET_KEY=sk_test_...
+
+# Neon Database (PostgreSQL)
+POSTGRES_URL="postgres://user:password@endpoint.neon.tech/neondb?sslmode=require"
+
+# Google Gemini API
+GEMINI_API_KEY=AIzaSy...
+```
+
+### 4. Database Setup
+
+1. Create a new project in Neon.
+2. Run the SQL schema to create the necessary tables. You can find the schema in `neon_schema.sql`.
+   - Copy the contents of `neon_schema.sql`.
+   - Go to the **SQL Editor** in your Neon dashboard.
+   - Paste and run the script.
+
+### 5. Run the Development Server
+
+```bash
+npm run dev
+```
+
+The application should now be running at `http://localhost:5173`.
+
+### 6. API Routes (Vercel Serverless)
+
+This project uses Vercel Serverless Functions for backend logic (user sync, credit consumption). These functions are located in the `/api` directory.
+
+To test API routes locally, you can use `vercel dev`:
+
+```bash
+npm i -g vercel
+vercel dev
+```
+
+## Deployment
+
+This project is optimized for deployment on [Vercel](https://vercel.com/).
+
+1. Push your code to a GitHub repository.
+2. Import the project in Vercel.
+3. Add the environment variables from your `.env` file to the Vercel project settings.
+4. Deploy!
+
+## License
+
+MIT
