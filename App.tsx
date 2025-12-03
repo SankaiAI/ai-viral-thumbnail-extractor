@@ -13,18 +13,7 @@ import { GuestLimitModal } from './components/GuestLimitModal';
 
 const DEFAULT_PROMPT = "Create a viral YouTube thumbnail based on the provided style and subject.";
 
-declare global {
-  interface Window {
-    aistudio?: {
-      hasSelectedApiKey: () => Promise<boolean>;
-      openSelectKey: () => Promise<void>;
-    };
-  }
-}
-
 export default function App() {
-  const [hasKey, setHasKey] = useState(false);
-  const [checkingKey, setCheckingKey] = useState(true);
   const [showLanding, setShowLanding] = useState(true);
   const [landingUrl, setLandingUrl] = useState(() => {
     // Restore URL from localStorage if it exists
@@ -52,23 +41,7 @@ export default function App() {
     history: [],
   });
 
-  useEffect(() => {
-    const checkApiKey = async () => {
-      // Check environment variables first
-      if (process.env.API_KEY || process.env.GEMINI_API_KEY) {
-        setHasKey(true);
-        setCheckingKey(false);
-        return;
-      }
 
-      if (window.aistudio) {
-        const has = await window.aistudio.hasSelectedApiKey();
-        setHasKey(has);
-      }
-      setCheckingKey(false);
-    };
-    checkApiKey();
-  }, []);
 
   // Capture referral code from URL
   useEffect(() => {
@@ -87,12 +60,7 @@ export default function App() {
     }
   }, [user]);
 
-  const handleSelectKey = async () => {
-    if (window.aistudio) {
-      await window.aistudio.openSelectKey();
-      setHasKey(true);
-    }
-  };
+
 
   const handleLandingSubmit = (url: string) => {
     setLandingUrl(url);
@@ -220,7 +188,7 @@ export default function App() {
         errorMessage.includes("PERMISSION_DENIED") ||
         errorMessage.includes("Requested entity was not found")
       ) {
-        setHasKey(false);
+
         setState(prev => ({
           ...prev,
           isGenerating: false,
@@ -265,46 +233,7 @@ export default function App() {
     document.body.removeChild(link);
   };
 
-  if (checkingKey) {
-    return (
-      <div className="min-h-screen bg-dark-900 flex items-center justify-center">
-        <Loader2 className="w-8 h-8 text-brand-500 animate-spin" />
-      </div>
-    );
-  }
 
-  if (!hasKey) {
-    return (
-      <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-4">
-        <div className="max-w-md w-full bg-dark-800 rounded-2xl border border-gray-800 p-8 shadow-2xl text-center space-y-6">
-          <div className="w-16 h-16 bg-gradient-to-br from-brand-500 to-purple-600 rounded-xl flex items-center justify-center mx-auto shadow-lg shadow-brand-500/20">
-            <Maximize2 className="w-8 h-8 text-white" />
-          </div>
-
-          <div className="space-y-2">
-            <h1 className="text-2xl font-bold tracking-tight">Welcome to ViralThumb AI</h1>
-            <p className="text-gray-400 text-sm">
-              Generate viral-worthy YouTube thumbnails using Gemini Nano Banana Pro.
-            </p>
-          </div>
-
-          <div className="space-y-4 pt-2">
-            <button
-              onClick={handleSelectKey}
-              className="w-full py-3 px-4 bg-white text-black font-semibold rounded-lg hover:bg-gray-100 transition-colors flex items-center justify-center gap-2"
-            >
-              <Key className="w-4 h-4" />
-              Connect Google Cloud Project
-            </button>
-            <p className="text-xs text-gray-500">
-              A paid project is required. <br />
-              <a href="https://ai.google.dev/gemini-api/docs/billing" target="_blank" rel="noreferrer" className="underline hover:text-brand-500">Billing Docs</a>
-            </p>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   if (showLanding) {
     return (
