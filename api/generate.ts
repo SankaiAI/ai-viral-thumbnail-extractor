@@ -16,7 +16,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         const { prompt, referenceImages, aspectRatio, resolution, chatHistory } = req.body;
 
         const ai = new GoogleGenAI({ apiKey: API_KEY });
-        const modelName = 'gemini-1.5-pro-latest'; // Or 'gemini-pro-vision' depending on availability
+        const modelName = 'gemini-2.5-flash-image'; // Nano Banana Pro model
 
         const parts: any[] = [];
 

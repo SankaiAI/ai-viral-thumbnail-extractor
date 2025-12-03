@@ -7,7 +7,7 @@ ViralThumb AI is a powerful tool that helps you create viral-worthy YouTube thum
 ## Features
 
 - 🎥 **Style Extraction**: Paste a YouTube URL to extract thumbnail style and vibe.
-- 🎨 **AI Generation**: Generate high-quality thumbnails using Google's Gemini 1.5 Pro.
+- 🎨 **AI Generation**: Generate high-quality thumbnails using Google's gemini-2.5-flash-image.
 - 👤 **User Accounts**: Sign in with Google to save your creations and manage credits.
 - 💳 **Credit System**: Free guest usage (3 limits) and credit-based system for logged-in users.
 - 🔗 **Referral System**: Invite friends to earn more credits.
@@ -18,7 +18,7 @@ ViralThumb AI is a powerful tool that helps you create viral-worthy YouTube thum
 - **Frontend**: React, TypeScript, Vite, Tailwind CSS
 - **Authentication**: Clerk
 - **Database**: Neon (PostgreSQL)
-- **AI Model**: Google Gemini 1.5 Pro
+- **AI Model**: gemini-2.5-flash-image
 - **Deployment**: Vercel
 
 ## Local Development Setup
