@@ -5,8 +5,11 @@ import { ChatPanel } from './components/ChatPanel';
 import { LandingPage } from './components/LandingPage';
 import { generateViralCover } from './services/geminiService';
 import { AppState, AspectRatio, ChatMessage, HistoryItem } from './types';
-import { Download, Monitor, Smartphone, Maximize2, Image as ImageIcon, Key, Loader2, Clock, Sparkles, Zap } from 'lucide-react';
+import { Download, Monitor, Smartphone, Maximize2, Image as ImageIcon, Key, Loader2, Clock, Sparkles, Zap, LogOut, Gift, User as UserIcon } from 'lucide-react';
 import { cleanBase64 } from './utils';
+import { useAuth } from './contexts/AuthContext';
+import { AuthModal } from './components/AuthModal';
+import { ReferralModal } from './components/ReferralModal';
 
 const DEFAULT_PROMPT = "Create a viral YouTube thumbnail based on the provided style and subject.";
 
@@ -22,6 +25,8 @@ export default function App() {
   const [checkingKey, setCheckingKey] = useState(true);
   const [showLanding, setShowLanding] = useState(true);
   const [landingUrl, setLandingUrl] = useState('');
+  const [showReferralModal, setShowReferralModal] = useState(false);
+  const { user, profile, loading: authLoading, signOut, consumeCredit } = useAuth();
 
   const [state, setState] = useState<AppState>({
     youtubeUrl: '',
@@ -54,6 +59,15 @@ export default function App() {
       setCheckingKey(false);
     };
     checkApiKey();
+  }, []);
+
+  // Capture referral code from URL
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const refCode = params.get('ref');
+    if (refCode) {
+      localStorage.setItem('referralCode', refCode);
+    }
   }, []);
 
   const handleSelectKey = async () => {
@@ -94,7 +108,26 @@ export default function App() {
     }));
   };
 
+  const [showAuthModal, setShowAuthModal] = useState(false);
+
   const handleSendMessage = async (text: string) => {
+    if (!user) {
+      setShowAuthModal(true);
+      return;
+    }
+
+    if (profile && profile.credits <= 0) {
+      setShowReferralModal(true);
+      return;
+    }
+
+    // Deduct credit
+    const success = await consumeCredit();
+    if (!success) {
+      setShowReferralModal(true);
+      return;
+    }
+
     const newUserMsg: ChatMessage = {
       id: Date.now().toString(),
       role: 'user',
@@ -191,6 +224,10 @@ export default function App() {
 
   const handleInitialGenerate = () => {
     if (!state.youtubeThumbnail && !state.profileImage) return;
+    if (!user) {
+      setShowAuthModal(true);
+      return;
+    }
     handleSendMessage(DEFAULT_PROMPT);
   };
 
@@ -262,13 +299,41 @@ export default function App() {
             <h1 className="text-lg font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">ViralThumb AI</h1>
           </div>
           <div className="flex items-center gap-4 text-xs font-medium text-gray-500">
-            <div className="flex items-center gap-1.5 px-3 py-1 bg-dark-800 rounded-full border border-gray-800">
-              <Zap className="w-3 h-3 text-yellow-500 fill-yellow-500" />
-              <span className="hidden sm:inline text-gray-300">Gemini Nano Banana Pro</span>
-            </div>
-            <button onClick={() => setHasKey(false)} className="hover:text-white transition-colors">
-              Switch Account
-            </button>
+            {user ? (
+              <>
+                <div className="flex items-center gap-2 px-3 py-1.5 bg-brand-500/10 rounded-full border border-brand-500/20 text-brand-400">
+                  <Zap className="w-3.5 h-3.5" />
+                  <span className="font-bold">{profile?.credits ?? 0} Credits</span>
+                </div>
+                <button
+                  onClick={() => setShowReferralModal(true)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-yellow-500 to-orange-500 text-white rounded-full hover:shadow-lg hover:shadow-orange-500/20 transition-all"
+                >
+                  <Gift className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">Get Credits</span>
+                </button>
+                <div className="h-4 w-px bg-gray-800" />
+                <div className="flex items-center gap-2">
+                  <div className="w-7 h-7 bg-gray-800 rounded-full flex items-center justify-center border border-gray-700">
+                    <UserIcon className="w-4 h-4 text-gray-400" />
+                  </div>
+                  <button
+                    onClick={() => signOut()}
+                    className="p-1.5 hover:bg-gray-800 rounded-lg text-gray-400 hover:text-white transition-colors"
+                    title="Sign Out"
+                  >
+                    <LogOut className="w-4 h-4" />
+                  </button>
+                </div>
+              </>
+            ) : (
+              <button
+                onClick={() => setShowAuthModal(true)}
+                className="px-4 py-1.5 bg-white text-black rounded-full font-semibold hover:bg-gray-200 transition-colors"
+              >
+                Sign In
+              </button>
+            )}
           </div>
         </div>
       </header>
@@ -418,6 +483,8 @@ export default function App() {
           />
         </div>
       </main>
+      {showAuthModal && !user && <AuthModal onClose={() => setShowAuthModal(false)} />}
+      <ReferralModal isOpen={showReferralModal} onClose={() => setShowReferralModal(false)} />
     </div>
   );
 }

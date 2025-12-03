@@ -48,6 +48,15 @@ export interface ImageCache {
   [AspectRatio.Square]?: string; // base64
 }
 
+
+export interface UserProfile {
+  id: string;
+  email?: string;
+  credits: number;
+  referral_code: string;
+  referred_by?: string;
+}
+
 export interface AppState {
   youtubeUrl: string;
   youtubeThumbnail: string | null; // base64
@@ -58,5 +67,6 @@ export interface AppState {
   messages: ChatMessage[];
   error: string | null;
   history: HistoryItem[];
+  user?: UserProfile | null; // Added user to state
 }
 
