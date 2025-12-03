@@ -1,11 +1,15 @@
 
-import { SearchedVideo } from "../types";
+import { SearchedVideo, YouTubeSortOption, YouTubeSearchResponse } from "../types";
 import { getYoutubeVideoId } from "../utils";
 
 const API_KEY = process.env.API_KEY;
 const BASE_URL = 'https://www.googleapis.com/youtube/v3';
 
-export const searchChannelVideos = async (query: string): Promise<SearchedVideo[]> => {
+export const searchChannelVideos = async (
+    query: string,
+    pageToken?: string,
+    order: YouTubeSortOption = 'relevance'
+): Promise<YouTubeSearchResponse> => {
     if (!API_KEY) {
         throw new Error("API Key is missing.");
     }
@@ -19,6 +23,11 @@ export const searchChannelVideos = async (query: string): Promise<SearchedVideo[
         searchUrl.searchParams.append('type', 'video');
         searchUrl.searchParams.append('maxResults', '6');
         searchUrl.searchParams.append('key', API_KEY);
+        searchUrl.searchParams.append('order', order);
+
+        if (pageToken) {
+            searchUrl.searchParams.append('pageToken', pageToken);
+        }
 
         const response = await fetch(searchUrl.toString());
 
@@ -36,7 +45,7 @@ export const searchChannelVideos = async (query: string): Promise<SearchedVideo[
         const data = await response.json();
 
         if (!data.items || data.items.length === 0) {
-            return [];
+            return { videos: [] };
         }
 
         // Step 2: Get video statistics (view counts)
@@ -94,7 +103,10 @@ export const searchChannelVideos = async (query: string): Promise<SearchedVideo[
             };
         }).filter((v): v is SearchedVideo => v !== null);
 
-        return videos;
+        return {
+            videos,
+            nextPageToken: data.nextPageToken
+        };
 
     } catch (error: any) {
         console.error("YouTube API Error:", error);

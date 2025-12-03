@@ -34,6 +34,13 @@ export interface SearchedVideo {
   thumbnailUrl: string;
 }
 
+export type YouTubeSortOption = 'relevance' | 'date' | 'viewCount' | 'rating';
+
+export interface YouTubeSearchResponse {
+  videos: SearchedVideo[];
+  nextPageToken?: string;
+}
+
 export interface AppState {
   youtubeUrl: string;
   youtubeThumbnail: string | null; // base64
