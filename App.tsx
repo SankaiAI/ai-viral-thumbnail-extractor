@@ -1,22 +1,24 @@
-
 import React, { useState, useEffect } from 'react';
 import { InputPanel } from './components/InputPanel';
 import { ChatPanel } from './components/ChatPanel';
 import { LandingPage } from './components/LandingPage';
 import { generateViralCover } from './services/geminiService';
 import { AppState, AspectRatio, ChatMessage, HistoryItem } from './types';
-import { Download, Monitor, Smartphone, Maximize2, Image as ImageIcon, Key, Loader2, Clock, Sparkles, Zap, LogOut, Gift, User as UserIcon } from 'lucide-react';
+import { Download, Monitor, Smartphone, Maximize2, Image as ImageIcon, Key, Loader2, Clock, Sparkles, Zap, Gift, LogOut, User as UserIcon, AlertCircle } from 'lucide-react';
 import { cleanBase64 } from './utils';
 import { useAuth } from './contexts/AuthContext';
 import { AuthModal } from './components/AuthModal';
 import { ReferralModal } from './components/ReferralModal';
+import { GuestLimitModal } from './components/GuestLimitModal';
 
 const DEFAULT_PROMPT = "Create a viral YouTube thumbnail based on the provided style and subject.";
 
 declare global {
-  interface AIStudio {
-    hasSelectedApiKey: () => Promise<boolean>;
-    openSelectKey: () => Promise<void>;
+  interface Window {
+    aistudio?: {
+      hasSelectedApiKey: () => Promise<boolean>;
+      openSelectKey: () => Promise<void>;
+    };
   }
 }
 
@@ -28,6 +30,10 @@ export default function App() {
     // Restore URL from localStorage if it exists
     return localStorage.getItem('landingUrl') || '';
   });
+  const [guestUsageCount, setGuestUsageCount] = useState(() => {
+    return parseInt(localStorage.getItem('guestUsageCount') || '0');
+  });
+  const [showGuestLimitModal, setShowGuestLimitModal] = useState(false);
   const [showReferralModal, setShowReferralModal] = useState(false);
   const { user, profile, loading: authLoading, signOut, consumeCredit } = useAuth();
 
@@ -124,20 +130,25 @@ export default function App() {
 
   const handleSendMessage = async (text: string) => {
     if (!user) {
-      setShowAuthModal(true);
-      return;
-    }
+      if (guestUsageCount >= 3) {
+        setShowGuestLimitModal(true);
+        return;
+      }
+      const newCount = guestUsageCount + 1;
+      setGuestUsageCount(newCount);
+      localStorage.setItem('guestUsageCount', newCount.toString());
+    } else {
+      if (profile && profile.credits <= 0) {
+        setShowReferralModal(true);
+        return;
+      }
 
-    if (profile && profile.credits <= 0) {
-      setShowReferralModal(true);
-      return;
-    }
-
-    // Deduct credit
-    const success = await consumeCredit();
-    if (!success) {
-      setShowReferralModal(true);
-      return;
+      // Deduct credit
+      const success = await consumeCredit();
+      if (!success) {
+        setShowReferralModal(true);
+        return;
+      }
     }
 
     const newUserMsg: ChatMessage = {
@@ -307,6 +318,19 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-[#0A0A0A] text-white font-sans selection:bg-brand-500/30 selection:text-brand-200">
+      {/* Guest Limit Banner */}
+      {!user && (
+        <div className="bg-gradient-to-r from-purple-900/50 to-brand-900/50 border-b border-white/5 px-4 py-2 text-center text-xs font-medium text-gray-300">
+          <div className="flex items-center justify-center gap-2">
+            <AlertCircle className="w-3.5 h-3.5 text-brand-400" />
+            <span>
+              Free Guest Mode: <span className="text-white">{3 - guestUsageCount} generations remaining</span>.
+              <button onClick={() => setShowAuthModal(true)} className="ml-2 text-brand-400 hover:text-brand-300 underline">Sign in</button> to save images & get 20 free credits!
+            </span>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <header className="sticky top-0 z-50 bg-[#0A0A0A]/80 backdrop-blur-md border-b border-white/5">
         <div className="max-w-[1920px] mx-auto px-6 h-14 flex items-center justify-between">
@@ -503,6 +527,14 @@ export default function App() {
       </main>
       {showAuthModal && <AuthModal onClose={() => setShowAuthModal(false)} />}
       <ReferralModal isOpen={showReferralModal} onClose={() => setShowReferralModal(false)} />
+      <GuestLimitModal
+        isOpen={showGuestLimitModal}
+        onClose={() => setShowGuestLimitModal(false)}
+        onSignIn={() => {
+          setShowGuestLimitModal(false);
+          setShowAuthModal(true);
+        }}
+      />
     </div>
   );
 }
