@@ -4,7 +4,6 @@ import { Link, ArrowRight, Sparkles, Video, PlayCircle, LogIn } from 'lucide-rea
 
 interface LandingPageProps {
   onUrlSubmit: (url: string) => void;
-  onSignIn?: () => void;
 }
 
 const LUCKY_URLS = [
@@ -14,7 +13,7 @@ const LUCKY_URLS = [
   "https://www.youtube.com/watch?v=jNQXAC9IVRw", // Me at the zoo
 ];
 
-export const LandingPage: React.FC<LandingPageProps> = ({ onUrlSubmit, onSignIn }) => {
+export const LandingPage: React.FC<LandingPageProps> = ({ onUrlSubmit }) => {
   const [url, setUrl] = useState('');
 
   const handleSubmit = (e?: React.FormEvent) => {
@@ -32,17 +31,6 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onUrlSubmit, onSignIn 
 
   return (
     <div className="min-h-screen bg-[#0A0A0A] flex flex-col items-center justify-center p-6 relative overflow-hidden">
-      {/* Login Button - Top Right */}
-      {onSignIn && (
-        <button
-          onClick={onSignIn}
-          className="absolute top-6 right-6 z-20 flex items-center gap-2 px-4 py-2 bg-white text-black rounded-full font-semibold hover:bg-gray-200 transition-colors"
-        >
-          <LogIn className="w-4 h-4" />
-          Sign In
-        </button>
-      )}
-
       {/* Background decoration */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-brand-500/10 rounded-full blur-3xl opacity-50"></div>
@@ -124,6 +112,6 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onUrlSubmit, onSignIn 
       <div className="absolute bottom-6 text-xs text-gray-600">
         Powered by Gemini Nano Banana Pro
       </div>
-    </div>
+    </div >
   );
 };

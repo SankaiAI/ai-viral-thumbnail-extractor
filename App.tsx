@@ -295,7 +295,7 @@ export default function App() {
   if (showLanding) {
     return (
       <>
-        <LandingPage onUrlSubmit={handleLandingSubmit} onSignIn={() => setShowAuthModal(true)} />
+        <LandingPage onUrlSubmit={handleLandingSubmit} />
         {showAuthModal && <AuthModal onClose={() => setShowAuthModal(false)} />}
         <ReferralModal isOpen={showReferralModal} onClose={() => setShowReferralModal(false)} />
       </>
