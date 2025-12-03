@@ -293,7 +293,13 @@ export default function App() {
   }
 
   if (showLanding) {
-    return <LandingPage onUrlSubmit={handleLandingSubmit} onSignIn={() => setShowAuthModal(true)} />;
+    return (
+      <>
+        <LandingPage onUrlSubmit={handleLandingSubmit} onSignIn={() => setShowAuthModal(true)} />
+        {showAuthModal && <AuthModal onClose={() => setShowAuthModal(false)} />}
+        <ReferralModal isOpen={showReferralModal} onClose={() => setShowReferralModal(false)} />
+      </>
+    );
   }
 
   return (
@@ -492,7 +498,7 @@ export default function App() {
           />
         </div>
       </main>
-      {showAuthModal && !user && <AuthModal onClose={() => setShowAuthModal(false)} />}
+      {showAuthModal && <AuthModal onClose={() => setShowAuthModal(false)} />}
       <ReferralModal isOpen={showReferralModal} onClose={() => setShowReferralModal(false)} />
     </div>
   );
