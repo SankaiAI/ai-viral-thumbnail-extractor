@@ -41,14 +41,22 @@ export interface YouTubeSearchResponse {
   nextPageToken?: string;
 }
 
+
+export interface ImageCache {
+  [AspectRatio.Landscape]?: string; // base64
+  [AspectRatio.Portrait]?: string; // base64
+  [AspectRatio.Square]?: string; // base64
+}
+
 export interface AppState {
   youtubeUrl: string;
   youtubeThumbnail: string | null; // base64
   profileImage: string | null; // base64
-  generatedImage: string | null; // base64
+  generatedImages: ImageCache; // Changed from single image to cache
   settings: GenerationSettings;
   isGenerating: boolean;
   messages: ChatMessage[];
   error: string | null;
   history: HistoryItem[];
 }
+

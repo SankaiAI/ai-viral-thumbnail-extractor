@@ -1,6 +1,6 @@
 
 import { GoogleGenAI } from "@google/genai";
-import { AspectRatio } from "../types";
+import { AspectRatio, ChatMessage } from "../types";
 
 const API_KEY = process.env.API_KEY;
 
@@ -12,7 +12,8 @@ export const generateViralCover = async (
   prompt: string,
   referenceImages: { data: string; mimeType: string }[],
   aspectRatio: AspectRatio,
-  resolution: '1K' | '2K' | '4K' = '1K'
+  resolution: '1K' | '2K' | '4K' = '1K',
+  chatHistory: ChatMessage[] = []
 ): Promise<string> => {
   if (!API_KEY) {
     throw new Error("API Key is missing. Please check your environment configuration.");
@@ -35,6 +36,20 @@ export const generateViralCover = async (
     });
   });
 
+  // Build conversation context from chat history
+  let conversationContext = '';
+  if (chatHistory.length > 0) {
+    conversationContext = '\n\nPrevious conversation:\n';
+    chatHistory.forEach((msg) => {
+      if (msg.role === 'user') {
+        conversationContext += `User: ${msg.text}\n`;
+      } else if (msg.role === 'model' && !msg.isError) {
+        conversationContext += `Assistant: ${msg.text}\n`;
+      }
+    });
+    conversationContext += '\n';
+  }
+
   // Construct a strong system-like prompt for the viral cover
   const finalPrompt = `
     Create a highly engaging, 'viral' style YouTube thumbnail image.
@@ -48,8 +63,8 @@ export const generateViralCover = async (
     - Expressive facial expressions.
     - Clear, bold text overlays if applicable (do not produce gibberish text).
     - Dynamic lighting.
-    
-    User Request: ${prompt}
+    ${conversationContext}
+    Current User Request: ${prompt}
   `;
 
   parts.push({ text: finalPrompt });

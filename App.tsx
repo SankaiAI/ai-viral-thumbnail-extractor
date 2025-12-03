@@ -27,7 +27,7 @@ export default function App() {
     youtubeUrl: '',
     youtubeThumbnail: null,
     profileImage: null,
-    generatedImage: null,
+    generatedImages: {},
     settings: {
       aspectRatio: AspectRatio.Landscape,
       resolution: '1K',
@@ -86,7 +86,10 @@ export default function App() {
   const handleHistorySelect = (item: HistoryItem) => {
     setState(prev => ({
       ...prev,
-      generatedImage: item.image,
+      generatedImages: {
+        ...prev.generatedImages,
+        [item.settings.aspectRatio]: item.image
+      },
       settings: item.settings
     }));
   };
@@ -144,7 +147,10 @@ export default function App() {
       setState(prev => ({
         ...prev,
         isGenerating: false,
-        generatedImage: generatedBase64,
+        generatedImages: {
+          ...prev.generatedImages,
+          [prev.settings.aspectRatio]: generatedBase64
+        },
         messages: [...prev.messages, aiMsg],
         history: [newHistoryItem, ...prev.history]
       }));
@@ -189,10 +195,11 @@ export default function App() {
   };
 
   const handleDownload = () => {
-    if (!state.generatedImage) return;
+    const currentImage = state.generatedImages[state.settings.aspectRatio];
+    if (!currentImage) return;
     const link = document.createElement('a');
-    link.href = `data:image/png;base64,${state.generatedImage}`;
-    link.download = `viral-cover-${Date.now()}.png`;
+    link.href = `data:image/png;base64,${currentImage}`;
+    link.download = `viral-cover-${state.settings.aspectRatio}-${Date.now()}.png`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -334,7 +341,7 @@ export default function App() {
             {/* Background Pattern */}
             <div className="absolute inset-0 bg-[radial-gradient(#222_1px,transparent_1px)] [background-size:16px_16px] opacity-50 pointer-events-none"></div>
 
-            {!state.generatedImage && !state.isGenerating && (
+            {!state.generatedImages[state.settings.aspectRatio] && !state.isGenerating && (
               <div className="text-center space-y-4 max-w-sm relative z-10 animate-in fade-in zoom-in-95 duration-500">
                 <div className="w-24 h-24 bg-dark-900/50 backdrop-blur-sm rounded-full flex items-center justify-center mx-auto border border-white/5 shadow-2xl">
                   <ImageIcon className="w-10 h-10 text-gray-700" />
@@ -360,7 +367,7 @@ export default function App() {
               </div>
             )}
 
-            {state.generatedImage && (
+            {state.generatedImages[state.settings.aspectRatio] && (
               <div className={`relative shadow-2xl shadow-black/50 rounded-lg overflow-hidden transition-all duration-700 ease-out z-10 border border-gray-800 ${state.isGenerating ? 'opacity-50 blur-sm scale-95' : 'opacity-100 scale-100'}`}
                 style={{
                   aspectRatio: state.settings.aspectRatio === AspectRatio.Landscape ? '16/9' : state.settings.aspectRatio === AspectRatio.Portrait ? '9/16' : '1/1',
@@ -369,7 +376,7 @@ export default function App() {
                 }}
               >
                 <img
-                  src={`data:image/png;base64,${state.generatedImage}`}
+                  src={`data:image/png;base64,${state.generatedImages[state.settings.aspectRatio]}`}
                   alt="Generated Viral Cover"
                   className="w-full h-full object-cover"
                 />
@@ -386,8 +393,8 @@ export default function App() {
                     key={item.id}
                     onClick={() => handleHistorySelect(item)}
                     className={`relative flex-shrink-0 h-16 aspect-video rounded-md overflow-hidden border transition-all group ${state.generatedImage === item.image
-                        ? 'border-brand-500 ring-2 ring-brand-500/20 scale-105'
-                        : 'border-gray-800 hover:border-gray-600 opacity-60 hover:opacity-100'
+                      ? 'border-brand-500 ring-2 ring-brand-500/20 scale-105'
+                      : 'border-gray-800 hover:border-gray-600 opacity-60 hover:opacity-100'
                       }`}
                   >
                     <img
