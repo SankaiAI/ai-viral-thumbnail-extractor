@@ -24,7 +24,10 @@ export default function App() {
   const [hasKey, setHasKey] = useState(false);
   const [checkingKey, setCheckingKey] = useState(true);
   const [showLanding, setShowLanding] = useState(true);
-  const [landingUrl, setLandingUrl] = useState('');
+  const [landingUrl, setLandingUrl] = useState(() => {
+    // Restore URL from localStorage if it exists
+    return localStorage.getItem('landingUrl') || '';
+  });
   const [showReferralModal, setShowReferralModal] = useState(false);
   const { user, profile, loading: authLoading, signOut, consumeCredit } = useAuth();
 
@@ -70,6 +73,14 @@ export default function App() {
     }
   }, []);
 
+  // Auto-hide landing page if URL exists (after OAuth redirect)
+  React.useEffect(() => {
+    const savedUrl = localStorage.getItem('landingUrl');
+    if (savedUrl && user) {
+      setShowLanding(false);
+    }
+  }, [user]);
+
   const handleSelectKey = async () => {
     if (window.aistudio) {
       await window.aistudio.openSelectKey();
@@ -79,6 +90,7 @@ export default function App() {
 
   const handleLandingSubmit = (url: string) => {
     setLandingUrl(url);
+    localStorage.setItem('landingUrl', url); // Persist URL
     setShowLanding(false);
   };
 
