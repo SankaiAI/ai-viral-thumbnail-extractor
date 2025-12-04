@@ -215,10 +215,10 @@ export default function App() {
 
   const handleInitialGenerate = () => {
     if (!state.youtubeThumbnail && !state.profileImage) return;
-    if (!user) {
-      setShowAuthModal(true);
-      return;
-    }
+    // if (!user) {
+    //   setShowAuthModal(true);
+    //   return;
+    // }
     handleSendMessage(DEFAULT_PROMPT);
   };
 
