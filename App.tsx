@@ -97,28 +97,9 @@ export default function App() {
   const [showAuthModal, setShowAuthModal] = useState(false);
 
   const handleSendMessage = async (text: string) => {
-    if (!user) {
-      if (guestUsageCount >= 3) {
-        setShowGuestLimitModal(true);
-        return;
-      }
-      const newCount = guestUsageCount + 1;
-      setGuestUsageCount(newCount);
-      localStorage.setItem('guestUsageCount', newCount.toString());
-    } else {
-      if (profile && profile.credits <= 0) {
-        setShowReferralModal(true);
-        return;
-      }
+    if (!text.trim()) return;
 
-      // Deduct credit
-      const success = await consumeCredit();
-      if (!success) {
-        setShowReferralModal(true);
-        return;
-      }
-    }
-
+    // Immediately add user message to UI for instant feedback
     const newUserMsg: ChatMessage = {
       id: Date.now().toString(),
       role: 'user',
@@ -131,6 +112,32 @@ export default function App() {
       isGenerating: true,
       error: null,
     }));
+
+    // Check guest limits or consume credits
+    if (!user) {
+      if (guestUsageCount >= 3) {
+        setState(prev => ({ ...prev, isGenerating: false }));
+        setShowGuestLimitModal(true);
+        return;
+      }
+      const newCount = guestUsageCount + 1;
+      setGuestUsageCount(newCount);
+      localStorage.setItem('guestUsageCount', newCount.toString());
+    } else {
+      if (profile && profile.credits <= 0) {
+        setState(prev => ({ ...prev, isGenerating: false }));
+        setShowReferralModal(true);
+        return;
+      }
+
+      // Deduct credit
+      const success = await consumeCredit();
+      if (!success) {
+        setState(prev => ({ ...prev, isGenerating: false }));
+        setShowReferralModal(true);
+        return;
+      }
+    }
 
     const referenceImages = [];
     if (state.youtubeThumbnail) {
