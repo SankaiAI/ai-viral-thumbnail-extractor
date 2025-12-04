@@ -121,7 +121,7 @@ ai-viral-thumbnail-extractor/
 - Referral system: Invite friends to earn 5 credits per signup
 
 ### Image Generation
-- Model: `gemini-2.5-flash-image`
+- Model: `gemini-3-pro-image-preview`
 - Supports aspect ratios: `16:9`, `9:16`, `1:1`
 - Reference images: YouTube thumbnail + optional profile image
 - Iterative refinement through chat interface
