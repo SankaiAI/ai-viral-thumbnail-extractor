@@ -55,13 +55,24 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         const finalPrompt = `
       Create a highly engaging, 'viral' style YouTube thumbnail image.
       
-      ${referenceImages?.length > 0 ? 'Use the attached images as style references and content sources.' : ''}
-      ${referenceImages?.length === 2 ? 'The first image is the STYLE REFERENCE (composition, text style, colors). The second image is the SUBJECT (person) to feature in the thumbnail.' : ''}
+      ${referenceImages?.length > 0 ? 'Use the attached images as references.' : ''}
+      ${referenceImages?.length === 2 ? `IMPORTANT: You have TWO reference images:
+      1. FIRST IMAGE = STYLE REFERENCE (use its composition, layout, text style, colors, background, and overall design)
+      2. SECOND IMAGE = SUBJECT REFERENCE (the main subject/element to feature in the thumbnail)
+      
+      YOUR TASK: Create a new thumbnail that combines these intelligently:
+      - Take the COMPOSITION, LAYOUT, TEXT PLACEMENT, COLORS, and BACKGROUND from the first image
+      - If the second image contains a PERSON/FACE: Replace any person/face in the first image with the person from the second image
+      - If the second image contains an OBJECT/PRODUCT: Incorporate that object/product into the scene from the first image
+      - If the second image is a LOGO/BRAND: Add that branding element to the first image's design
+      - Keep the same pose, expression intensity, and energy as the first image (if applicable)
+      - Maintain the same text style and placement (if text exists)
+      - The result should seamlessly blend the subject from the second image into the scene/style from the first image` : ''}
       ${referenceImages?.length === 1 ? 'Use the attached image as the main subject or style reference.' : ''}
       
       Requirements:
       - High contrast, vibrant colors.
-      - Expressive facial expressions.
+      - Expressive facial expressions (if people are present).
       - Clear, bold text overlays if applicable (do not produce gibberish text).
       - Dynamic lighting.
       ${conversationContext}
