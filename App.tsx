@@ -271,9 +271,7 @@ export default function App() {
       <header className="sticky top-0 z-50 bg-[#0A0A0A]/80 backdrop-blur-md border-b border-white/5">
         <div className="max-w-[1920px] mx-auto px-6 h-14 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-gradient-to-br from-brand-600 to-purple-600 rounded-lg flex items-center justify-center shadow-lg shadow-brand-500/20">
-              <Maximize2 className="w-4 h-4 text-white" />
-            </div>
+            <img src="/logo.png" alt="ViralThumb AI Logo" className="w-8 h-8" />
             <h1 className="text-lg font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">ViralThumb AI</h1>
           </div>
           <div className="flex items-center gap-4 text-xs font-medium text-gray-500">
