@@ -315,10 +315,10 @@ export default function App() {
       </header>
 
       {/* Main 3-Column Layout */}
-      <main className="max-w-[1920px] mx-auto px-4 py-4 grid grid-cols-1 lg:grid-cols-12 gap-4 h-[calc(100vh-3.5rem)]">
+      <main className="max-w-[1920px] mx-auto px-4 py-4 grid grid-cols-1 lg:grid-cols-12 gap-4 lg:h-[calc(100vh-3.5rem)]">
 
         {/* Left Column: Inputs (3 cols) */}
-        <div className="lg:col-span-3 flex flex-col h-full overflow-y-auto scrollbar-none gap-4">
+        <div className="lg:col-span-3 flex flex-col lg:h-full overflow-y-auto scrollbar-none gap-4">
           <InputPanel
             onYoutubeThumbnailChange={handleYoutubeChange}
             onProfileImageChange={handleProfileChange}
@@ -330,12 +330,12 @@ export default function App() {
         </div>
 
         {/* Center Column: Preview & History (6 cols) */}
-        <div className="lg:col-span-6 flex flex-col h-full min-h-0 bg-dark-800/30 rounded-2xl border border-gray-800/50 relative overflow-hidden shadow-2xl">
+        <div className="lg:col-span-6 flex flex-col min-h-[500px] lg:h-full lg:min-h-0 bg-dark-800/30 rounded-2xl border border-gray-800/50 relative overflow-hidden shadow-2xl">
 
           {/* Top Toolbar */}
-          <div className="absolute top-0 left-0 right-0 z-20 p-4 flex items-center justify-between bg-gradient-to-b from-black/80 to-transparent pointer-events-none">
+          <div className="relative lg:absolute top-0 left-0 right-0 z-20 p-4 flex items-center justify-between bg-gradient-to-b from-black/80 to-transparent lg:pointer-events-none">
             {/* Aspect Ratio Controls - Re-enable pointer events */}
-            <div className="pointer-events-auto bg-black/60 backdrop-blur-md rounded-lg p-1 border border-white/10 flex gap-1">
+            <div className="lg:pointer-events-auto bg-black/60 backdrop-blur-md rounded-lg p-1 border border-white/10 flex gap-1">
               {[
                 { r: AspectRatio.Landscape, icon: Monitor, label: '16:9' },
                 { r: AspectRatio.Portrait, icon: Smartphone, label: '9:16' },
@@ -353,7 +353,7 @@ export default function App() {
             </div>
 
             {/* Action Buttons */}
-            <div className="pointer-events-auto flex items-center gap-3">
+            <div className="lg:pointer-events-auto flex items-center gap-3">
               {state.generatedImage && (
                 <button
                   onClick={handleDownload}
@@ -378,7 +378,7 @@ export default function App() {
           </div>
 
           {/* Main Canvas */}
-          <div className="flex-1 flex items-center justify-center p-8 relative overflow-hidden">
+          <div className="flex-1 flex items-center justify-center p-8 relative overflow-hidden min-h-[300px]">
             {/* Background Pattern */}
             <div className="absolute inset-0 bg-[radial-gradient(#222_1px,transparent_1px)] [background-size:16px_16px] opacity-50 pointer-events-none"></div>
 
@@ -451,7 +451,7 @@ export default function App() {
         </div>
 
         {/* Right Column: Chat (3 cols) */}
-        <div className="lg:col-span-3 flex flex-col h-full min-h-0">
+        <div className="lg:col-span-3 flex flex-col min-h-[400px] lg:h-full lg:min-h-0">
           <ChatPanel
             messages={state.messages}
             onSendMessage={handleSendMessage}
