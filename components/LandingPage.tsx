@@ -1,6 +1,7 @@
 
-import React, { useState } from 'react';
-import { Link, ArrowRight, Sparkles, Video, PlayCircle, LogIn } from 'lucide-react';
+
+import React, { useState, useEffect } from 'react';
+import { Link, ArrowRight, Sparkles, Video, PlayCircle, LogIn, Wand2, Zap, Github } from 'lucide-react';
 
 interface LandingPageProps {
   onUrlSubmit: (url: string) => void;
@@ -68,15 +69,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onUrlSubmit }) => {
                 onChange={(e) => setUrl(e.target.value)}
                 autoFocus
               />
-              <div className="absolute right-2 flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={handleLucky}
-                  className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-400 hover:text-brand-400 hover:bg-white/5 rounded-lg transition-colors"
-                >
-                  <Sparkles className="w-3 h-3" />
-                  I'm feeling lucky
-                </button>
+              <div className="absolute right-2">
                 <button
                   type="submit"
                   disabled={!url.trim()}
@@ -90,26 +83,114 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onUrlSubmit }) => {
         </div>
 
         {/* Feature Card */}
-        <div className="w-full max-w-lg">
-          <div className="bg-dark-900/50 backdrop-blur-md border border-gray-800 rounded-2xl p-6 flex items-center justify-between hover:border-brand-500/30 transition-colors cursor-default group">
-            <div className="space-y-1.5 text-left">
-              <h3 className="font-semibold text-white group-hover:text-brand-400 transition-colors">Capture the Vibe</h3>
-              <p className="text-sm text-gray-500 leading-relaxed">
-                Don't start from scratch. Use any video as a style reference for your next masterpiece.
-              </p>
-            </div>
-            <div className="ml-4 w-16 h-16 rounded-full bg-gradient-to-tr from-purple-500/20 to-brand-500/20 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-500">
-              <PlayCircle className="w-8 h-8 text-gray-300 group-hover:text-white transition-colors" />
-            </div>
-          </div>
+        {/* Feature Carousel */}
+        <div className="w-full max-w-lg relative overflow-hidden">
+          <FeatureCarousel />
         </div>
 
       </div>
 
       {/* Footer */}
-      <div className="absolute bottom-6 text-xs text-gray-600">
-        Powered by Gemini Nano Banana Pro
+      <div className="absolute bottom-6 flex items-center gap-4 text-xs text-gray-600">
+        <span>Powered by Gemini Nano Banana Pro</span>
+        <a
+          href="https://github.com/SankaiAI/ai-viral-thumbnail-extractor"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-1.5 text-gray-500 hover:text-brand-400 transition-colors group"
+          title="View source on GitHub"
+        >
+          <Github className="w-4 h-4 group-hover:scale-110 transition-transform" />
+          <span className="hidden sm:inline">Open Source</span>
+        </a>
       </div>
     </div >
+  );
+};
+
+// Feature Carousel Component
+const FeatureCarousel: React.FC = () => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  const features = [
+    {
+      title: "Capture the Vibe",
+      description: "Don't start from scratch. Use any video as a style reference for your next masterpiece.",
+      icon: PlayCircle,
+      gradient: "from-purple-500/20 to-brand-500/20"
+    },
+    {
+      title: "AI-Powered Magic",
+      description: "Let AI understand your vision and generate stunning thumbnails that capture attention.",
+      icon: Wand2,
+      gradient: "from-brand-500/20 to-cyan-500/20"
+    },
+    {
+      title: "Instant Results",
+      description: "Generate professional-quality thumbnails in seconds. No design skills required.",
+      icon: Zap,
+      gradient: "from-yellow-500/20 to-orange-500/20"
+    }
+  ];
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % features.length);
+    }, 3000); // Auto-rotate every 3 seconds
+
+    return () => clearInterval(interval);
+  }, [features.length]);
+
+  return (
+    <div className="relative w-full h-32">
+      {features.map((feature, index) => {
+        const Icon = feature.icon;
+        const isActive = index === currentIndex;
+        const isPrev = index === (currentIndex - 1 + features.length) % features.length;
+        const isNext = index === (currentIndex + 1) % features.length;
+
+        return (
+          <div
+            key={index}
+            className={`absolute inset-0 transition-all duration-500 ease-in-out ${isActive
+              ? 'opacity-100 translate-x-0 z-10'
+              : isPrev
+                ? 'opacity-0 -translate-x-full z-0'
+                : isNext
+                  ? 'opacity-0 translate-x-full z-0'
+                  : 'opacity-0 translate-x-full z-0'
+              }`}
+          >
+            <div className="bg-dark-900/50 backdrop-blur-md border border-gray-800 rounded-2xl p-6 flex items-center justify-between hover:border-brand-500/30 transition-colors cursor-default group h-full">
+              <div className="space-y-1.5 text-left flex-1">
+                <h3 className="font-semibold text-white group-hover:text-brand-400 transition-colors">
+                  {feature.title}
+                </h3>
+                <p className="text-sm text-gray-500 leading-relaxed">
+                  {feature.description}
+                </p>
+              </div>
+              <div className={`ml-4 w-16 h-16 rounded-full bg-gradient-to-tr ${feature.gradient} flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-500`}>
+                <Icon className="w-8 h-8 text-gray-300 group-hover:text-white transition-colors" />
+              </div>
+            </div>
+          </div>
+        );
+      })}
+
+      {/* Dots Indicator */}
+      <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 flex gap-2">
+        {features.map((_, index) => (
+          <button
+            key={index}
+            onClick={() => setCurrentIndex(index)}
+            className={`w-2 h-2 rounded-full transition-all ${index === currentIndex
+              ? 'bg-brand-500 w-6'
+              : 'bg-gray-700 hover:bg-gray-600'
+              }`}
+          />
+        ))}
+      </div>
+    </div>
   );
 };
