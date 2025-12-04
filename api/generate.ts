@@ -4,11 +4,16 @@ import { GoogleGenAI } from "@google/genai";
 const API_KEY = process.env.GEMINI_API_KEY;
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
+    console.log('API Handler started');
+    console.log('Request Method:', req.method);
+    console.log('API Key present:', !!API_KEY);
+
     if (req.method !== 'POST') {
         return res.status(405).json({ error: 'Method not allowed' });
     }
 
     if (!API_KEY) {
+        console.error('Missing API Key');
         return res.status(500).json({ error: 'Server configuration error: Missing API Key' });
     }
 
@@ -16,7 +21,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         const { prompt, referenceImages, aspectRatio, resolution, chatHistory } = req.body;
 
         const ai = new GoogleGenAI({ apiKey: API_KEY });
-        const modelName = 'gemini-2.5-flash-image'; // Nano Banana Pro model
+        const modelName = 'gemini-2.5-flash-image'; // Nano Banana Pro model (Imagen 3)
 
         const parts: any[] = [];
 
@@ -66,11 +71,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         parts.push({ text: finalPrompt });
 
         // Generate content
-        // Note: The Node.js SDK for GoogleGenAI might differ slightly in structure from the web SDK.
-        // We are using the @google/genai package as per previous context, assuming it supports Node.
-
-        // For the server-side, we might need to use the standard REST API or the specific Node SDK method.
-        // Assuming the same SDK works in Node:
         const response = await ai.models.generateContent({
             model: modelName,
             contents: {
@@ -79,8 +79,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             config: {
                 // @ts-ignore - types might mismatch slightly between versions
                 imageConfig: {
-                    aspectRatio: aspectRatio,
-                    imageSize: resolution,
+                    aspectRatio: aspectRatio, // Should be "16:9", "9:16", or "1:1"
                 }
             },
         });

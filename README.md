@@ -1,103 +1,174 @@
-# ViralThumb AI
+# ViralThumb AI 🎨
 
-ViralThumb AI is a powerful tool that helps you create viral-worthy YouTube thumbnails in seconds. It extracts style references from existing videos and uses advanced AI to generate stunning new designs.
+**Create viral-worthy YouTube thumbnails in seconds using AI-powered style extraction and generation.**
 
-![ViralThumb AI Demo](public/og-image.png)
+ViralThumb AI helps content creators generate stunning thumbnails by extracting style references from existing viral videos and using Google's Gemini AI to create new designs.
 
-## Features
+## ✨ Features
 
-- 🎥 **Style Extraction**: Paste a YouTube URL to extract thumbnail style and vibe.
-- 🎨 **AI Generation**: Generate high-quality thumbnails using Google's gemini-2.5-flash-image.
-- 👤 **User Accounts**: Sign in with Google to save your creations and manage credits.
-- 💳 **Credit System**: Free guest usage (3 limits) and credit-based system for logged-in users.
-- 🔗 **Referral System**: Invite friends to earn more credits.
-- ☁️ **Cloud Storage**: Automatically save your generated thumbnails to the cloud.
+- 🎥 **Style Extraction** - Paste any YouTube URL to extract thumbnail style and composition
+- 🤖 **AI Generation** - Powered by Google's `gemini-2.5-flash-image` (Nano Banana Pro)
+- 👥 **Guest Mode** - Try it free with 3 generations (no sign-up required)
+- 🔐 **User Accounts** - Sign in with Google via Clerk for 20 free credits
+- 💳 **Credit System** - Earn more credits through referrals
+- 📐 **Multiple Aspect Ratios** - Generate for YouTube (16:9), Stories (9:16), or Square (1:1)
+- 💬 **Iterative Design** - Chat with AI to refine your thumbnails
+- 📜 **History** - Access all your previous generations
 
-## Tech Stack
+## 🛠️ Tech Stack
 
-- **Frontend**: React, TypeScript, Vite, Tailwind CSS
-- **Authentication**: Clerk
-- **Database**: Neon (PostgreSQL)
-- **AI Model**: gemini-2.5-flash-image
-- **Deployment**: Vercel
+- **Frontend**: React 19, TypeScript, Vite
+- **Styling**: Vanilla CSS with modern design patterns
+- **Authentication**: Clerk (Google OAuth)
+- **Database**: Neon (Serverless PostgreSQL)
+- **AI Model**: Google Gemini 2.5 Flash Image
+- **Deployment**: Vercel (Serverless Functions)
+- **Icons**: Lucide React
 
-## Local Development Setup
-
-Follow these steps to get the project running on your local machine.
+## 🚀 Quick Start
 
 ### Prerequisites
 
-- Node.js (v18 or higher)
-- npm or yarn
-- A [Clerk](https://clerk.com/) account
-- A [Neon](https://neon.tech/) account
-- A [Google AI Studio](https://aistudio.google.com/) API key
+- Node.js 18+ and npm
+- [Clerk](https://clerk.com/) account (for authentication)
+- [Neon](https://neon.tech/) account (for database)
+- [Google AI Studio](https://aistudio.google.com/) API key
 
-### 1. Clone the Repository
+### 1. Clone & Install
 
 ```bash
 git clone https://github.com/SankaiAI/ai-viral-thumbnail-extractor.git
 cd ai-viral-thumbnail-extractor
-```
-
-### 2. Install Dependencies
-
-```bash
 npm install
 ```
 
-### 3. Environment Setup
+### 2. Environment Setup
 
-Create a `.env` file in the root directory and add the following variables:
+Create a `.env` file in the root directory:
 
 ```env
 # Clerk Authentication
 VITE_CLERK_PUBLISHABLE_KEY=pk_test_...
 CLERK_SECRET_KEY=sk_test_...
 
-# Neon Database (PostgreSQL)
+# Neon Database
 POSTGRES_URL="postgres://user:password@endpoint.neon.tech/neondb?sslmode=require"
 
 # Google Gemini API
 GEMINI_API_KEY=AIzaSy...
 ```
 
-### 4. Database Setup
+### 3. Database Setup
 
-1. Create a new project in Neon.
-2. Run the SQL schema to create the necessary tables. You can find the schema in `neon_schema.sql`.
-   - Copy the contents of `neon_schema.sql`.
-   - Go to the **SQL Editor** in your Neon dashboard.
-   - Paste and run the script.
+1. Create a new project in [Neon](https://neon.tech/)
+2. Copy your connection string to `.env`
+3. Run the schema in Neon's SQL Editor:
 
-### 5. Run the Development Server
+```bash
+# Copy contents of neon_schema.sql and run in Neon SQL Editor
+```
+
+### 4. Run Development Server
+
+For full-stack development with API routes:
+
+```bash
+vercel dev
+```
+
+Or for frontend-only development:
 
 ```bash
 npm run dev
 ```
 
-The application should now be running at `http://localhost:5173`.
+The app will be available at `http://localhost:3001` (vercel dev) or `http://localhost:3000` (vite).
 
-### 6. API Routes (Vercel Serverless)
+## 📁 Project Structure
 
-This project uses Vercel Serverless Functions for backend logic (user sync, credit consumption). These functions are located in the `/api` directory.
-
-To test API routes locally, you can use `vercel dev`:
-
-```bash
-npm i -g vercel
-vercel dev
+```
+ai-viral-thumbnail-extractor/
+├── api/                    # Vercel Serverless Functions
+│   ├── generate.ts        # Image generation endpoint
+│   ├── credits/           # Credit management
+│   └── user/              # User sync with database
+├── components/            # React components
+│   ├── LandingPage.tsx   # Initial URL input
+│   ├── InputPanel.tsx    # Image upload & settings
+│   ├── ChatPanel.tsx     # AI chat interface
+│   ├── AuthModal.tsx     # Sign-in modal
+│   ├── ReferralModal.tsx # Referral system
+│   └── GuestLimitModal.tsx
+├── contexts/
+│   └── AuthContext.tsx   # Clerk auth wrapper
+├── services/
+│   └── geminiService.ts  # AI API client
+├── App.tsx               # Main application
+├── types.ts              # TypeScript definitions
+└── utils.ts              # Helper functions
 ```
 
-## Deployment
+## 🔑 Key Implementation Details
 
-This project is optimized for deployment on [Vercel](https://vercel.com/).
+### Guest Mode
+- Guests can generate 3 free images without signing in
+- Usage tracked in `localStorage`
+- After 3 generations, prompted to sign in
 
-1. Push your code to a GitHub repository.
-2. Import the project in Vercel.
-3. Add the environment variables from your `.env` file to the Vercel project settings.
+### Credit System
+- New users receive 20 free credits
+- Each generation consumes 1 credit
+- Referral system: Invite friends to earn 5 credits per signup
+
+### Image Generation
+- Model: `gemini-2.5-flash-image`
+- Supports aspect ratios: `16:9`, `9:16`, `1:1`
+- Reference images: YouTube thumbnail + optional profile image
+- Iterative refinement through chat interface
+
+## 🌐 Deployment
+
+### Vercel (Recommended)
+
+1. Push code to GitHub
+2. Import project in [Vercel](https://vercel.com/)
+3. Add environment variables in Vercel dashboard
 4. Deploy!
 
-## License
+### Environment Variables for Production
 
-MIT
+Ensure all `.env` variables are added to Vercel:
+- `VITE_CLERK_PUBLISHABLE_KEY`
+- `CLERK_SECRET_KEY`
+- `POSTGRES_URL`
+- `GEMINI_API_KEY`
+
+## 🐛 Troubleshooting
+
+### API 400 Error
+- Ensure `GEMINI_API_KEY` is valid
+- Check that `aspectRatio` is one of: `"16:9"`, `"9:16"`, `"1:1"`
+
+### Database Connection Issues
+- Verify `POSTGRES_URL` format includes `?sslmode=require`
+- Check Neon project is active
+
+### Guest Limit Not Working
+- Clear `localStorage` to reset: `localStorage.removeItem('guestUsageCount')`
+
+## 📄 License
+
+MIT License - See [LICENSE](LICENSE) file for details
+
+## 🤝 Contributing
+
+Contributions are welcome! Please open an issue or submit a pull request.
+
+## 🔗 Links
+
+- **Live Demo**: [viralthumb.studio](https://www.viralthumb.studio/)
+- **GitHub**: [SankaiAI/ai-viral-thumbnail-extractor](https://github.com/SankaiAI/ai-viral-thumbnail-extractor)
+
+---
+
+Built with ❤️ by [ShawnAI](https://github.com/SankaiAI)
