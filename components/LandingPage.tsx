@@ -62,7 +62,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onUrlSubmit }) => {
               </div>
               <input
                 type="text"
-                className="w-full bg-transparent border-none py-5 pl-4 pr-40 text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-0 text-base"
+                className="w-full bg-transparent border-none py-5 pl-4 pr-4 text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-0 text-base"
                 placeholder="Paste Youtube URL link here..."
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
