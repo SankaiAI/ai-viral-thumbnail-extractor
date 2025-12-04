@@ -95,6 +95,7 @@ export default function App() {
   };
 
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [showProfileDropdown, setShowProfileDropdown] = useState(false);
 
   const handleSendMessage = async (text: string) => {
     if (!text.trim()) return;
@@ -269,27 +270,29 @@ export default function App() {
 
       {/* Header */}
       <header className="sticky top-0 z-50 bg-[#0A0A0A]/80 backdrop-blur-md border-b border-white/5">
-        <div className="max-w-[1920px] mx-auto px-6 h-14 flex items-center justify-between">
-          <div className="flex items-center gap-3">
+        <div className="max-w-[1920px] mx-auto px-4 sm:px-6 h-14 flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2 sm:gap-3">
             <img src="/logo.png" alt="ViralThumb AI Logo" className="w-8 h-8" />
-            <h1 className="text-lg font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">ViralThumb AI</h1>
+            <h1 className="hidden sm:block text-lg font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">ViralThumb AI</h1>
           </div>
-          <div className="flex items-center gap-4 text-xs font-medium text-gray-500">
+          <div className="flex items-center gap-2 sm:gap-4 text-xs font-medium text-gray-500">
             {user ? (
               <>
-                <div className="flex items-center gap-2 px-3 py-1.5 bg-brand-500/10 rounded-full border border-brand-500/20 text-brand-400">
+                <div className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 bg-brand-500/10 rounded-full border border-brand-500/20 text-brand-400">
                   <Zap className="w-3.5 h-3.5" />
-                  <span className="font-bold">{profile?.credits ?? 0} Credits</span>
+                  <span className="font-bold text-xs sm:text-sm">{profile?.credits ?? 0} Credits</span>
                 </div>
                 <button
                   onClick={() => setShowReferralModal(true)}
-                  className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-yellow-500 to-orange-500 text-white rounded-full hover:shadow-lg hover:shadow-orange-500/20 transition-all"
+                  className="flex items-center gap-1.5 px-2 sm:px-3 py-1.5 bg-gradient-to-r from-yellow-500 to-orange-500 text-white rounded-full hover:shadow-lg hover:shadow-orange-500/20 transition-all"
                 >
                   <Gift className="w-3.5 h-3.5" />
-                  <span className="hidden sm:inline">Get Credits</span>
+                  <span className="text-xs sm:text-sm">Get Credits</span>
                 </button>
-                <div className="h-4 w-px bg-gray-800" />
-                <div className="flex items-center gap-2">
+                <div className="hidden sm:block h-4 w-px bg-gray-800" />
+
+                {/* Desktop: Show both profile and logout */}
+                <div className="hidden sm:flex items-center gap-2">
                   <div className="w-7 h-7 bg-gray-800 rounded-full flex items-center justify-center border border-gray-700">
                     <UserIcon className="w-4 h-4 text-gray-400" />
                   </div>
@@ -301,11 +304,72 @@ export default function App() {
                     <LogOut className="w-4 h-4" />
                   </button>
                 </div>
+
+                {/* Mobile: Profile icon with dropdown */}
+                <div className="sm:hidden relative">
+                  <button
+                    onClick={() => setShowProfileDropdown(!showProfileDropdown)}
+                    className="w-7 h-7 bg-gray-800 rounded-full flex items-center justify-center border border-gray-700 hover:border-brand-500 transition-colors"
+                  >
+                    <UserIcon className="w-4 h-4 text-gray-400" />
+                  </button>
+
+                  {/* Dropdown Menu */}
+                  {showProfileDropdown && (
+                    <>
+                      {/* Backdrop */}
+                      <div
+                        className="fixed inset-0 z-40"
+                        onClick={() => setShowProfileDropdown(false)}
+                      />
+
+                      {/* Menu */}
+                      <div className="absolute right-0 top-full mt-2 w-72 bg-dark-800 border border-gray-700 rounded-xl shadow-2xl z-50 overflow-hidden">
+                        {/* History Section */}
+                        {state.history.length > 0 && (
+                          <div className="p-3 border-b border-gray-700">
+                            <h3 className="text-xs font-semibold text-gray-400 mb-2">Recent Images</h3>
+                            <div className="grid grid-cols-3 gap-2">
+                              {state.history.slice(0, 6).map((item) => (
+                                <button
+                                  key={item.id}
+                                  onClick={() => {
+                                    handleHistorySelect(item);
+                                    setShowProfileDropdown(false);
+                                  }}
+                                  className="aspect-video rounded-lg overflow-hidden border border-gray-700 hover:border-brand-500 transition-colors"
+                                >
+                                  <img
+                                    src={`data:image/png;base64,${item.image}`}
+                                    alt="History"
+                                    className="w-full h-full object-cover"
+                                  />
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Logout Button */}
+                        <button
+                          onClick={() => {
+                            signOut();
+                            setShowProfileDropdown(false);
+                          }}
+                          className="w-full px-4 py-3 flex items-center gap-3 text-left hover:bg-gray-700/50 transition-colors text-gray-300"
+                        >
+                          <LogOut className="w-4 h-4" />
+                          <span className="text-sm font-medium">Sign Out</span>
+                        </button>
+                      </div>
+                    </>
+                  )}
+                </div>
               </>
             ) : (
               <button
                 onClick={() => setShowAuthModal(true)}
-                className="px-4 py-1.5 bg-white text-black rounded-full font-semibold hover:bg-gray-200 transition-colors"
+                className="px-4 py-1.5 bg-white text-black rounded-full font-semibold hover:bg-gray-200 transition-colors text-sm"
               >
                 Sign In
               </button>
