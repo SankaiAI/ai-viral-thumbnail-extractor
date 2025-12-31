@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import { AuthProvider } from './contexts/AuthContext';
+import { Analytics } from '@vercel/analytics/react';
 
 import { ClerkProvider } from '@clerk/clerk-react';
 
@@ -22,6 +23,7 @@ root.render(
     <ClerkProvider publishableKey={PUBLISHABLE_KEY} afterSignOutUrl="/">
       <AuthProvider>
         <App />
+        <Analytics />
       </AuthProvider>
     </ClerkProvider>
   </React.StrictMode>
